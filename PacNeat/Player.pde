@@ -2,8 +2,8 @@ class Player {
   Pacman pacman;
   float fitness;
   Genome brain;
-  float[] vision = new float[8];//the input array fed into the neuralNet 
-  float[] decision = new float[4]; //the out put of the NN 
+  float[] vision = new float[8];//the input array fed into the neuralNet
+  float[] decision = new float[4]; //the out put of the NN
   float unadjustedFitness;
   int lifespan = 0;//how long the player lived for fitness
   int bestScore =0;//stores the score achieved used for replay
@@ -61,12 +61,9 @@ class Player {
 
     if (isCriticalPosition(pacman.pos)) {
 
-      //so how this works 
-      //get the 'danger' of going in that direciton by finding the nearest ghost in that direction and inversing the distance to it 
-      //i could also do a bunch of directions (12 - 18) directions lto find the nice nigger
-      //lets do the bunch of directions thing then if that is still too complicated then fuck you
-
-      //also this is assuming that this is called every time pacman is at a critical point 
+      //so how this works
+      //get the 'danger' of going in that direciton by finding the nearest ghost in that direction and inversing the distance to it
+      //also this is assuming that this is called every time pacman is at a critical point
 
       vision = new float[13];
       distanceToGhostInDirection();
@@ -122,14 +119,14 @@ class Player {
 
     int visionIndex = -1;
 
-    for (PVector dir : directions) {//for each direction 
+    for (PVector dir : directions) {//for each direction
       visionIndex++;
-      float distance = 0; 
+      float distance = 0;
       PathNode temp = pacmanNode;
       PathNode previousNode = pacmanNode;
 
       PVector wrongWay = new PVector(-dir.x, -dir.y);
-      float min = 100;   
+      float min = 100;
       int minIndex = 0;
       boolean intersectionPassed = false;
       while (!temp.isGhost) {//keeps looking left until it finds a wall or a ghost
@@ -150,18 +147,18 @@ class Player {
 
         if (min == 100) {//hit a wall
           break;
-        } 
+        }
 
         //add the distance to this node to the distance covered
         distance += min;
-        previousNode = temp;//set the previous node to the current node 
+        previousNode = temp;//set the previous node to the current node
         temp = temp.edges.get(minIndex);//set the current node to the closest node to the left of this node
 
         if (!intersectionPassed && isIntersection(temp)) {//keep track of whether or not the path passes an intersection or not
           intersectionPassed = true;
         }
       }
-      //either wall or ghost is found     
+      //either wall or ghost is found
       if (temp.isGhost) {//if we found a ghost then we're done with this direction
         vision[visionIndex] = 1.0/distance;
       } else {
@@ -174,14 +171,14 @@ class Player {
 
 
 
-            //so at this point we havent found a ghost nor have we passed an intersection 
+            //so at this point we havent found a ghost nor have we passed an intersection
             //lets think about what this means
             //if we are not currently on an intersection and we hit a wal that means we hit a corner
-            //a corner will have 2 direcitons coming out of it 
+            //a corner will have 2 direcitons coming out of it
 
             //if a corner is reached then continue by finding the nearest node which isnt the previous node visited
             //this is continued until we reach a ghost or an intersection
-            while (!temp.isGhost && !isIntersection(temp)) {  
+            while (!temp.isGhost && !isIntersection(temp)) {
               //print(3);
               min = 100;
 
@@ -212,7 +209,7 @@ class Player {
 
               distance += min;
               wrongWay = new PVector(previousNode.x - temp.x, previousNode.y - temp.y);
-              wrongWay.normalize();  
+              wrongWay.normalize();
             }
             if (temp.isGhost) {
               vision[visionIndex] = 1/distance;//if there is a ghost in this direction then add the inverse of the distance to the inputs
@@ -261,7 +258,7 @@ class Player {
   void setDistanceToWalls() {
 
     PVector matrixPosition = pixelToTile(pacman.pos);
-    PVector[] directions = new  PVector[4]; 
+    PVector[] directions = new  PVector[4];
     for (int i = 0; i< 4; i++) {//add 4 directions to the array
       directions[i] = new PVector(pacman.vel.x, pacman.vel.y);
       directions[i].rotate(PI/2 *i);
@@ -270,7 +267,7 @@ class Player {
     }
 
     int visionIndex = 4;
-    for (PVector dir : directions) {//for each direction 
+    for (PVector dir : directions) {//for each direction
       PVector lookingPosition = new PVector(matrixPosition.x + dir.x, matrixPosition.y+ dir.y);//look int that direction
       if (originalTiles[(int)lookingPosition.y][(int)lookingPosition.x].wall) {//if there is a wall in that direction
         vision[visionIndex] = 1;
@@ -284,7 +281,7 @@ class Player {
           break;
         }
 
-        if (pacman.tiles[(int)lookingPosition.y][(int)lookingPosition.x].dot && !pacman.tiles[(int)lookingPosition.y][(int)lookingPosition.x].eaten) {//if dot 
+        if (pacman.tiles[(int)lookingPosition.y][(int)lookingPosition.x].dot && !pacman.tiles[(int)lookingPosition.y][(int)lookingPosition.x].eaten) {//if dot
           vision[visionIndex + 4] = 1;//this allows the players to see in which direction a dot is
           break;
         }
@@ -329,13 +326,13 @@ class Player {
     pacman.turn = true;
 
   }
-  //---------------------------------------------------------------------------------------------------------------------------------------------------------  
+  //---------------------------------------------------------------------------------------------------------------------------------------------------------
   //returns a clone of this player with the same brian
   Player clone() {
     Player clone = new Player();
     clone.brain = brain.clone();
     clone.fitness = fitness;
-    clone.brain.generateNetwork(); 
+    clone.brain.generateNetwork();
     clone.gen = gen;
     clone.bestScore = score;
     return clone;
