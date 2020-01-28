@@ -1,4 +1,4 @@
-# PacNeat
+# PaComputer
 Using NEAT to train AIs to play the game of pacman
 
 Built with processing so you will need processing to run this program
